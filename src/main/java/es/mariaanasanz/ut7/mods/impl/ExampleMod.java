@@ -3,6 +3,7 @@ package es.mariaanasanz.ut7.mods.impl;
 import es.mariaanasanz.ut7.mods.base.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
@@ -35,7 +36,40 @@ public class ExampleMod extends DamMod implements IBlockBreakEvent, IServerStart
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event) {
         BlockPos pos = event.getPos();
+        BlockState state = event.getLevel().getBlockState(pos);
         System.out.println("Bloque destruido en la posicion "+pos);
+        BlockPos posi = pos;
+        if (state.getBlock().getName().getString().trim().toLowerCase().endsWith("log")){
+            System.out.println("has roto un tronco, tronco");
+            Player player = event.getPlayer();
+            ItemStack heldItem = player.getMainHandItem();
+            if(esArbol(event)){
+                if (heldItem.getItem().getName(heldItem).getString().trim().toLowerCase().endsWith("axe")) {
+                    while (state.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                            state.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")) {
+
+                        System.out.println("se rompe");
+                        state = event.getLevel().getBlockState(posi.above());
+                        posi = posi.above();
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean esArbol(BlockEvent.BreakEvent event){
+        BlockPos pos = event.getPos();
+        BlockState state = event.getLevel().getBlockState(pos.above());
+        while (state.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                state.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")) {
+            System.out.println("hay algo");
+            if (state.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")){
+                return true;
+            }
+            state = event.getLevel().getBlockState(pos.above());
+            pos = pos.above();
+        }
+        return false;
     }
 
     @Override
