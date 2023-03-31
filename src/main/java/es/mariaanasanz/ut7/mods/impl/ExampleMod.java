@@ -1,10 +1,16 @@
 package es.mariaanasanz.ut7.mods.impl;
 
 import es.mariaanasanz.ut7.mods.base.*;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -12,11 +18,15 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.awt.*;
 
 @Mod(DamMod.MOD_ID)
 public class ExampleMod extends DamMod implements IBlockBreakEvent, IServerStartEvent,
@@ -35,6 +45,7 @@ public class ExampleMod extends DamMod implements IBlockBreakEvent, IServerStart
     @Override
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent event) {
+        Level level = event.getPlayer().getLevel();
         BlockPos pos = event.getPos();
         BlockState state = event.getLevel().getBlockState(pos);
         System.out.println("Bloque destruido en la posicion "+pos);
@@ -47,8 +58,59 @@ public class ExampleMod extends DamMod implements IBlockBreakEvent, IServerStart
                 if (heldItem.getItem().getName(heldItem).getString().trim().toLowerCase().endsWith("axe")) {
                     while (state.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
                             state.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")) {
+                        for (int xi = 0; xi < 5; xi++) {
+                            BlockPos poso = new BlockPos(posi.getX() + xi, posi.getY(), posi.getZ());
+                            BlockState stato = event.getLevel().getBlockState(poso);
+                            if(stato.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                                    stato.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")){
+                                level.destroyBlock(poso , true);
+                            }
+                            for (int zi = 0; zi < 5; zi++) {
+                                BlockPos posu = new BlockPos(posi.getX() + xi, posi.getY(), posi.getZ() + zi);
+                                BlockState statu = event.getLevel().getBlockState(posu);
+                                if(statu.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                                        statu.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")) {
+                                    level.destroyBlock(posu, true);
+                                }
+                            }
+                            for (int zq = 0; zq < 5; zq++) {
+                                BlockPos posu = new BlockPos(posi.getX() + xi, posi.getY(), posi.getZ() - zq);
+                                BlockState statu = event.getLevel().getBlockState(posu);
+                                if(statu.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                                        statu.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")) {
+                                    level.destroyBlock(posu, true);
+                                }
+                            }
+                        }
+                        for (int xd = 0; xd < 5; xd++) {
+                            BlockPos poso = new BlockPos(posi.getX() - xd, posi.getY(), posi.getZ());
+                            BlockState stato = event.getLevel().getBlockState(poso);
+                            if(stato.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                                    stato.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")){
+                                level.destroyBlock(poso , true);
+                            }
+                            for (int zd = 0; zd < 5; zd++) {
+                                BlockPos posu = new BlockPos(posi.getX() - xd, posi.getY(), posi.getZ() - zd);
+                                BlockState statu = event.getLevel().getBlockState(posu);
+                                if(statu.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                                        statu.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")) {
+                                    level.destroyBlock(posu, true);
+                                }
+                            }
+                            for (int zq = 0; zq < 5; zq++) {
+                                BlockPos posu = new BlockPos(posi.getX() - xd, posi.getY(), posi.getZ() + zq);
+                                BlockState statu = event.getLevel().getBlockState(posu);
+                                if(statu.getBlock().getName().getString().trim().toLowerCase().endsWith("log") ||
+                                        statu.getBlock().getName().getString().trim().toLowerCase().endsWith("leaves")) {
+                                    level.destroyBlock(posu, true);
+                                }
+                            }
+                        }
 
+                        level.destroyBlock(posi, true);
+                        System.out.println(posi);
                         System.out.println("se rompe");
+
                         state = event.getLevel().getBlockState(posi.above());
                         posi = posi.above();
                     }
